@@ -1,0 +1,11 @@
+### IntelliJ IDEA ###
+.idea/
+*.iml
+*.ipr
+*.iws
+
+### OS and environment ###
+Thumbs.db
+.DS_Store
+*.swp
+*.bak
