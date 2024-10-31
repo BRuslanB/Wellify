@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s  # Частота сбора метрик
+
+scrape_configs:
+  - job_name: "prometheus"  # Название задачи
+    static_configs:
+      - targets: ["localhost:9090"]  # Prometheus сам себя будет мониторить
+
+  - job_name: "myapp"  # Добавьте свои сервисы
+    static_configs:
+      - targets: ["redis:6379"]  # Например, redis 
