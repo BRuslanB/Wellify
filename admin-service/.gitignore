@@ -26,3 +26,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+
+### data ###
+/keycloak-db-data/
