@@ -4,3 +4,34 @@ server:
 spring:
   application:
     name: admin-service
+  # DataSource Configuration for PostgreSQL
+  datasource:
+#    url: jdbc:postgresql://app-db:5432/app_db_data
+    url: jdbc:postgresql://localhost:5433/app_db_data
+    username: admin_db
+    password: qweqwe123
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${keycloak.url}/realms/${keycloak.realm}/protocol/openid-connect/certs
+
+keycloak:
+  url: http://localhost:8080/auth
+  realm: wellify-realm  # Realm name
+  admin:
+    username: admin_realm
+    password: qweqwe123
+    client-id: user-service-client  # ID client, created in Keycloak
+    client-secret: fPzeHFX8Z25OYiA6sgI01P7PwD7qaGhc  # Secret client from Keycloak
+    grant-type: password
+
+#  admin:
+#    username: admin
+#    password: admin
+#    client-id: admin-cli
+#    client-secret: your-admin-client-secret

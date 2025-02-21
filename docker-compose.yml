@@ -14,7 +14,7 @@ services:
     image: redis:latest
     container_name: redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - app-network
 
@@ -22,19 +22,26 @@ services:
     image: mongo:latest
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - app-network
 
-  postgres:
+  app-db:
     image: postgres:latest
-    container_name: postgres
+    container_name: app-db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: appdb
+      POSTGRES_USER: admin_db
+      POSTGRES_PASSWORD: qweqwe123
+      POSTGRES_DB: app_db_data
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    volumes:
+      - ./app-db-data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin_db -d app_db_data"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - app-network
 
@@ -42,8 +49,8 @@ services:
     image: minio/minio
     container_name: minio
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: admin_minio
+      MINIO_ROOT_PASSWORD: qweqwe123
     command: server /data
     ports:
       - "9000:9000"
@@ -52,14 +59,42 @@ services:
       - app-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:24.0.5 # Same as build.gradle
     container_name: keycloak
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    command: start-dev
+      KEYCLOAK_ADMIN: admin_master
+      KEYCLOAK_ADMIN_PASSWORD: qweqwe123
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/postgres
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+    command:
+      - start-dev
+      - --http-relative-path=/auth
     ports:
       - "8080:8080"
+      - "8843:8843" # For KeyCloak Admin panel
+    depends_on:
+      - keycloak-db
+    networks:
+      - app-network
+
+  keycloak-db:
+    image: 'postgres:alpine'
+    container_name: 'keycloak-db'
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./admin-service/keycloak-db-data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - app-network
 

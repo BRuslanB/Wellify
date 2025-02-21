@@ -1,11 +1,14 @@
+### Java ###
+HELP.md
+
 ### IntelliJ IDEA ###
-.idea/
+.idea
+*.iws
 *.iml
 *.ipr
-*.iws
 
-### OS and environment ###
-Thumbs.db
-.DS_Store
-*.swp
-*.bak
+### data ###
+/app-db-data/
+
+### logs ###
+/logs
