@@ -13,8 +13,10 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    restart: always
     ports:
       - "6380:6379"
+    command: ["redis-server", "--requirepass", "my_password"]
     networks:
       - app-network
 
