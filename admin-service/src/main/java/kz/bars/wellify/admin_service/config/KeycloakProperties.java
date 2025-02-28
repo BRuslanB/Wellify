@@ -13,6 +13,7 @@ public class KeycloakProperties {
     private String url;
     private String realm;
     private Admin admin;  // вложенное свойство для админских настроек
+    private String publicKey;
 
     @Data
     public static class Admin {

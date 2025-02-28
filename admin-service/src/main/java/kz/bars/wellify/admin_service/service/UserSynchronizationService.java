@@ -1,6 +1,6 @@
 package kz.bars.wellify.admin_service.service;
 
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import kz.bars.wellify.admin_service.model.Role;
 import kz.bars.wellify.admin_service.model.User;
 import kz.bars.wellify.admin_service.repository.RoleRepository;
@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -45,13 +46,13 @@ public class UserSynchronizationService {
                     Role newRole = new Role();
                     newRole.setName(roleName);
                     newRole.setDescription("Автоматически созданная роль");
-                    Role savedRole = roleRepository.saveAndFlush(newRole);
+                    Role savedRole = roleRepository.save(newRole);
                     log.info("Created new role: {} with id: {}", savedRole.getName(), savedRole.getId());
                     return savedRole;
                 })).collect(Collectors.toSet());
         user.setRoles(roleEntities);
 
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
     }
 
     /**
