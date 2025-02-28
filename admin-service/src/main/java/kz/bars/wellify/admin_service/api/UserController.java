@@ -1,10 +1,10 @@
 package kz.bars.wellify.admin_service.api;
 
-import kz.bars.wellify.admin_service.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kz.bars.wellify.admin_service.dto.UserBlockAndDeleteDto;
 import kz.bars.wellify.admin_service.service.KeycloakService;
-import kz.bars.wellify.admin_service.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,12 +19,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/user")
 @RequiredArgsConstructor
+@Tag(name = "User API", description = "API for managing users")
 public class UserController {
 
     private final KeycloakService keycloakService;
 
     // Эндпоинт для вывода всех ролей (для теста)
     @GetMapping("/roles")
+    @Operation(summary = "Get user roles")
     public List<String> getUserRoles() {
         // Получаем объект аутентификации из SecurityContextHolder
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -34,44 +36,10 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
-    // Эндпоинт для создания пользователя
-    @PostMapping(value = "/create")
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserCreateDto userCreateDto) {
-        UserRepresentation createdUser = keycloakService.createUser(userCreateDto);
-        UserResponseDto userResponseDto = new UserResponseDto(createdUser.getUsername(), createdUser.getEmail(),
-                createdUser.getFirstName(), createdUser.getLastName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
-    }
-
-    // Эндпоинт для авторизации пользователя
-    @PostMapping(value = "/sign-in")
-    public ResponseEntity<String> signIn(@RequestBody UserSignInDto userSignInDto) {
-        String token = keycloakService.signIn(userSignInDto);
-        return ResponseEntity.ok(token);
-    }
-
-    // Эндпоинт для смены пароля (доступен для авторизированных пользоваталей)
-    @PostMapping(value = "/change-password")
-    @PreAuthorize("isAuthenticated")
-    public ResponseEntity<String> changePassword(@RequestBody UserChangePasswordDto userChangePasswordDto) {
-
-        String currentUserName = UserUtils.getCurrentUserName();
-        if (currentUserName == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Couldn't Identify User");
-        }
-
-        try {
-            keycloakService.changePassword(currentUserName, userChangePasswordDto);
-            return ResponseEntity.ok("Password changed!");
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error on changing password");
-        }
-    }
-
     // Эндпоинт для удаления пользователя (доступен только администратору)
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Delete user")
     public ResponseEntity<String> deleteUser(@RequestBody UserBlockAndDeleteDto userDeleteDto) {
         try {
             keycloakService.deleteUser(userDeleteDto);
@@ -84,6 +52,7 @@ public class UserController {
     // Эндпоинт для блокировки пользователя (доступен только администратору)
     @PostMapping("/block")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Block user")
     public ResponseEntity<String> blockUser(@RequestBody UserBlockAndDeleteDto userBlockDto) {
         try {
             keycloakService.blockUser(userBlockDto);
@@ -96,6 +65,7 @@ public class UserController {
     // Эндпоинт для разблокировки пользователя (доступен только администратору)
     @PostMapping("/unblock")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Unblock user")
     public ResponseEntity<String> unblockUser(@RequestBody UserBlockAndDeleteDto userUnblockDto) {
         try {
             keycloakService.unblockUser(userUnblockDto);

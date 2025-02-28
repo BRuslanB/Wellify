@@ -1,5 +1,7 @@
 package kz.bars.wellify.admin_service.api;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kz.bars.wellify.admin_service.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,22 +12,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api")
 @RequiredArgsConstructor
+@Tag(name = "Item API", description = "API for managing items")
 public class ItemController {
 
     @GetMapping(value = "/home")
     @PreAuthorize("isAuthenticated")
+    @Operation(summary = "Home page")
     public String homePage(){
         return "This is home page " + UserUtils.getCurrentUserName();
     }
 
     @GetMapping(value = "/about")
     @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "About page")
     public String aboutPage(){
         return "This is about page " + UserUtils.getCurrentUserFirstName() + " - " + UserUtils.getCurrentUserLastName();
     }
 
     @GetMapping(value = "/admin")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Admin panel")
     public String adminPage(){
         return "This is admin page " + UserUtils.getCurrentUserEmail();
     }

@@ -1,19 +1,17 @@
 package kz.bars.wellify.admin_service.aop;
 
+import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
+@Log4j2
 public class ErrorHandlingAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(ErrorHandlingAspect.class);
-
-    @AfterThrowing(pointcut = "execution(* kz.bars.wellify.admin_service..*(..))", throwing = "ex")
+    @AfterThrowing(pointcut = "execution(* kz.bars.wellify..*(..))", throwing = "ex")
     public void logException(Exception ex) {
-        logger.error("Exception caught: " + ex.getMessage(), ex);
+        log.error("Exception caught: " + ex.getMessage(), ex);
     }
 }

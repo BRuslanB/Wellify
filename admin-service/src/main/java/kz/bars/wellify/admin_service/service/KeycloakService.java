@@ -8,9 +8,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 
 public interface KeycloakService {
 
-    UserRepresentation createUser(UserCreateDto user);
+    UserRepresentation signUp(UserCreateDto user);
     String signIn(UserSignInDto userSignInDto);
     void changePassword(String username, UserChangePasswordDto userChangePasswordDto);
+    void logout(String token);
     void deleteUser(UserBlockAndDeleteDto userDeleteDto);
     void blockUser(UserBlockAndDeleteDto userBlockDto);
     void unblockUser(UserBlockAndDeleteDto userUnblockDto);
