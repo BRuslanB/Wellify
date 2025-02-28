@@ -1,11 +1,12 @@
+# general settings
 server:
-  port: 8001
+  port: 8001 # Порт, на котором запускается приложение
 
+# spring settings
 spring:
   application:
     name: admin-service
-  # DataSource Configuration for PostgreSQL
-  datasource:
+  datasource:  # DataSource Configuration for PostgreSQL
 #    url: jdbc:postgresql://app-db:5432/app_db_data
     url: jdbc:postgresql://localhost:5433/app_db_data
     username: admin_db
@@ -19,7 +20,16 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${keycloak.url}/realms/${keycloak.realm}/protocol/openid-connect/certs
+  redis:
+    host: localhost         # Подключаемся к localhost, так как Redis работает в контейнере
+    port: 6380              # Подключаемся к внешнему порту
+    password: my_password   # Пароль, указанный в Docker Compose
+    timeout: 5000
+  aop:
+    auto: true
+    proxy-target-class: true
 
+# keycloak settings
 keycloak:
   url: http://localhost:8080/auth
   realm: wellify-realm  # Realm name
@@ -29,9 +39,41 @@ keycloak:
     client-id: user-service-client  # ID client, created in Keycloak
     client-secret: fPzeHFX8Z25OYiA6sgI01P7PwD7qaGhc  # Secret client from Keycloak
     grant-type: password
+  public-key: | # Public key RSA-256 from Keycloak
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjk8LpHGknFt7Z5q1ZHW/3oHJEVi/RzPIExhvU0HIODqx9ozs5wkTBclp6PkIeB394dATQF6w0wt8nNdp0TEUUIi37xpfPG5fb6nMb+Xlr8mVqL0gmV8HKVjrSAKQjBFlOF302DXaQSdnyl3tzFd2f1rdT7N///KqSoqYsL8fUj0oBbUvEWzhJpp8SpgJisPoU/e3g6NAgAVqj4gjkNRHwzxY8bUTDNVDHKaWB1l8jM+gxFD4/Ruk6i3x93EuUrTaDYOB/1PQhznazHKQJXUTul3QP5UxxhOWY5+1v0urnZ51kMfY2EZzUx+NLqaKYnzXcDZdE8w772S2Gduq9UmklwIDAQAB
+    -----END PUBLIC KEY-----
 
-#  admin:
-#    username: admin
-#    password: admin
-#    client-id: admin-cli
-#    client-secret: your-admin-client-secret
+# springdoc settings
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html  # Настройка пути к Swagger UI
+    enabled: true           # Включить доступ к Swagger UI
+  api-docs:
+    path: /api-docs         # Настройка пути к OpenAPI-документации
+    enabled: true           # Включить доступ к OpenAPI-документации
+
+# actuator settings
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/"  # Настройка пути
+      path-mapping:
+        info: "info"            # Инфо о приложении
+        metrics: "metrics"      # Метрики и состояния
+        health: "healthcheck"   # Метрики и состояния
+  endpoint:
+    health:
+      show-details: when_authorized # Только для авторизированных пользователей
+    metrics:
+      show-details: when_authorized # Только для авторизированных пользователей
+
+# logging settings
+logging:
+  level:
+    org.springframework.web.filter.GenericFilterBean: DEBUG
+    org.springframework.boot.web.servlet: DEBUG
+    org.springframework.aop: DEBUG
+    org.aspectj: DEBUG
