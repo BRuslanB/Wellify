@@ -10,7 +10,9 @@ import kz.bars.wellify.admin_service.exception.*;
 import kz.bars.wellify.admin_service.model.Role;
 import kz.bars.wellify.admin_service.model.User;
 import kz.bars.wellify.admin_service.repository.UserRepository;
+import kz.bars.wellify.admin_service.config.JwtTokenProvider;
 import kz.bars.wellify.admin_service.service.KeycloakService;
+import kz.bars.wellify.admin_service.service.TokenBlacklistService;
 import kz.bars.wellify.admin_service.service.UserSynchronizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -44,10 +46,12 @@ public class KeycloakServiceImpl implements KeycloakService {
     private final KeycloakProperties keycloakProperties;
     private final UserRepository userRepository;
     private final UserSynchronizationService userSynchronizationService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    // Создание пользователя
+    // Регистрация пользователя
     @Override
-    public UserRepresentation createUser(UserCreateDto userCreateDto) {
+    public UserRepresentation signUp(UserCreateDto userCreateDto) {
 
         // Создание нового объекта пользователя
         UserRepresentation newUser = new UserRepresentation();
@@ -180,6 +184,16 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .resetPassword(credentialRepresentation);
 
         log.info("Password changed!");
+    }
+
+    // Логаут пользователя
+    public void logout(String token) {
+        if (jwtTokenProvider.validateToken(token)) {
+            long expiration = jwtTokenProvider.getExpiration(token);
+            tokenBlacklistService.blacklistToken(token, expiration);
+        } else {
+            throw new IllegalArgumentException("Invalid token.");
+        }
     }
 
     // Удаление пользователя
