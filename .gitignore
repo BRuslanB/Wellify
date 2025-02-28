@@ -1,6 +1,11 @@
 ### Java ###
 HELP.md
 
+### Gradle Wrapper ###
+!gradlew
+!gradlew.bat
+!gradle/wrapper/
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
