@@ -34,3 +34,4 @@ out/
 
 ### data ###
 /keycloak-db-data/
+/minio_db_data/
