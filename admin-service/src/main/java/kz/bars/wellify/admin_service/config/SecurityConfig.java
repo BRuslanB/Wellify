@@ -1,7 +1,7 @@
 package kz.bars.wellify.admin_service.config;
 
 import kz.bars.wellify.admin_service.repository.UserRepository;
-import kz.bars.wellify.admin_service.service.TokenBlacklistService;
+import kz.bars.wellify.admin_service.utils.TokenBlacklistService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

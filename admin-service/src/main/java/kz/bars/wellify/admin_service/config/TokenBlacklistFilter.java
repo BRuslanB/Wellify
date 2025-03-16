@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kz.bars.wellify.admin_service.model.User;
 import kz.bars.wellify.admin_service.repository.UserRepository;
-import kz.bars.wellify.admin_service.service.TokenBlacklistService;
+import kz.bars.wellify.admin_service.utils.TokenBlacklistService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;

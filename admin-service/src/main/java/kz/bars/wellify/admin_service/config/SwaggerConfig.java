@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "Wellify Application", version = "1.1.0"),
+        info = @Info(title = "Wellify Application", version = "1.2.0"),
         security = @SecurityRequirement(name = "BearerAuth")
 )
 @SecurityScheme(
