@@ -44,6 +44,13 @@ keycloak:
     MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjk8LpHGknFt7Z5q1ZHW/3oHJEVi/RzPIExhvU0HIODqx9ozs5wkTBclp6PkIeB394dATQF6w0wt8nNdp0TEUUIi37xpfPG5fb6nMb+Xlr8mVqL0gmV8HKVjrSAKQjBFlOF302DXaQSdnyl3tzFd2f1rdT7N///KqSoqYsL8fUj0oBbUvEWzhJpp8SpgJisPoU/e3g6NAgAVqj4gjkNRHwzxY8bUTDNVDHKaWB1l8jM+gxFD4/Ruk6i3x93EuUrTaDYOB/1PQhznazHKQJXUTul3QP5UxxhOWY5+1v0urnZ51kMfY2EZzUx+NLqaKYnzXcDZdE8w772S2Gduq9UmklwIDAQAB
     -----END PUBLIC KEY-----
 
+# minio settings
+minio:
+  url: http://localhost:9000
+  accessKey: admin_minio
+  secretKey: qweqwe123
+  bucket: avatars
+
 # springdoc settings
 springdoc:
   swagger-ui:

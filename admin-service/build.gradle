@@ -51,6 +51,9 @@ dependencies {
 	// Keycloak
 	implementation 'org.keycloak:keycloak-spring-boot-starter:24.0.5'
 	implementation 'org.keycloak:keycloak-admin-client:24.0.5'
+	// Minio
+	implementation group: 'io.minio', name: 'minio', version: '8.5.11'
+	implementation group: 'commons-codec', name: 'commons-codec', version: '1.17.0'
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
