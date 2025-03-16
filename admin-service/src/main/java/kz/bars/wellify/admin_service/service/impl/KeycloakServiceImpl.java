@@ -1,6 +1,7 @@
 package kz.bars.wellify.admin_service.service.impl;
 
 import jakarta.ws.rs.core.Response;
+import kz.bars.wellify.admin_service.config.JwtTokenProvider;
 import kz.bars.wellify.admin_service.config.KeycloakProperties;
 import kz.bars.wellify.admin_service.dto.UserBlockAndDeleteDto;
 import kz.bars.wellify.admin_service.dto.UserChangePasswordDto;
@@ -10,10 +11,9 @@ import kz.bars.wellify.admin_service.exception.*;
 import kz.bars.wellify.admin_service.model.Role;
 import kz.bars.wellify.admin_service.model.User;
 import kz.bars.wellify.admin_service.repository.UserRepository;
-import kz.bars.wellify.admin_service.config.JwtTokenProvider;
 import kz.bars.wellify.admin_service.service.KeycloakService;
-import kz.bars.wellify.admin_service.service.TokenBlacklistService;
-import kz.bars.wellify.admin_service.service.UserSynchronizationService;
+import kz.bars.wellify.admin_service.utils.TokenBlacklistService;
+import kz.bars.wellify.admin_service.utils.UserSynchronizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.admin.client.Keycloak;
@@ -55,9 +55,9 @@ public class KeycloakServiceImpl implements KeycloakService {
 
         // Создание нового объекта пользователя
         UserRepresentation newUser = new UserRepresentation();
+        newUser.setUsername(userCreateDto.username);
         newUser.setEmail(userCreateDto.email);
         newUser.setEmailVerified(true);
-        newUser.setUsername(userCreateDto.username);
         newUser.setFirstName(userCreateDto.firstName);
         newUser.setLastName(userCreateDto.lastName);
         newUser.setEnabled(true);
@@ -125,6 +125,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     // Авторизация пользавателя
     @Override
     public String signIn(UserSignInDto userSignInDto) {
+
         String tokenEndpoint = keycloakProperties.getUrl() + "/realms/" + keycloakProperties.getRealm() + "/protocol/openid-connect/token";
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -168,7 +169,7 @@ public class KeycloakServiceImpl implements KeycloakService {
                 .search(username, true); // Для поиска по полному совпадению используем парметр - true
 
         if (users.isEmpty()) {
-            log.error("User not found to change");
+            log.error("User not found to change password");
             throw new UserNotFoundException(username);
         }
 
@@ -188,6 +189,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     // Логаут пользователя
     public void logout(String token) {
+
         if (jwtTokenProvider.validateToken(token)) {
             long expiration = jwtTokenProvider.getExpiration(token);
             tokenBlacklistService.blacklistToken(token, expiration);
@@ -219,7 +221,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         // Найти пользователя в локальной БД по Keycloak ID
         User user = userRepository.findById(userId).orElse(null);
 
-        // Помечаем локальную запись как уаленную (мякгое удаление)
+        // Помечаем локальную запись как удаленную (мякгое удаление)
         if (user != null) {
             user.setStatus(User.UserStatus.DELETED);
             userRepository.save(user);

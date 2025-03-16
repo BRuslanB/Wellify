@@ -1,5 +1,6 @@
 package kz.bars.wellify.admin_service.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -9,5 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class UserChangePasswordDto {
 
+    @NotBlank
     public String newPassword;
 }

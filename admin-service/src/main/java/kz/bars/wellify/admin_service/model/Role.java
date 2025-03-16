@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @Table(name = "roles")
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,8 +20,8 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-    // Дополнительное поле, например, описание роли
-    private String description;
+    @Column
+    private String description; // Дополнительное поле, описание роли
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();

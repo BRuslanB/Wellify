@@ -1,10 +1,10 @@
-package kz.bars.wellify.admin_service.service;
+package kz.bars.wellify.admin_service.utils.impl;
 
-//import jakarta.transaction.Transactional;
 import kz.bars.wellify.admin_service.model.Role;
 import kz.bars.wellify.admin_service.model.User;
 import kz.bars.wellify.admin_service.repository.RoleRepository;
 import kz.bars.wellify.admin_service.repository.UserRepository;
+import kz.bars.wellify.admin_service.utils.UserSynchronizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class UserSynchronizationService {
+public class UserSynchronizationServiceImpl implements UserSynchronizationService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -28,7 +28,9 @@ public class UserSynchronizationService {
      * Этот метод обновляет или создаёт запись пользователя, используя данные, полученные из токена.
      */
     @Transactional
-    public void syncUserFromToken(String keycloakId, String username, String email, List<String> roles) {
+    public void syncUserFromToken(String keycloakId, String username, String email, String firstName, String lastName,
+                                  List<String> roles) {
+
         User user = userRepository.findById(keycloakId).orElseGet(() -> {
             User newUser = new User();
             newUser.setId(keycloakId);
@@ -38,6 +40,8 @@ public class UserSynchronizationService {
         // Обновляем основные поля
         user.setUsername(username);
         user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setStatus(User.UserStatus.ACTIVE);
 
         // Синхронизация ролей: сопоставляем строки с локальными сущностями Role.
@@ -61,7 +65,9 @@ public class UserSynchronizationService {
      */
     @Transactional
     public void syncUserFromRepresentation(UserRepresentation kcUser, User.UserStatus status) {
+
         String keycloakId = kcUser.getId();
+
         // Найти пользователя в локальной БД по Keycloak ID или создать новый, если не найден
         User user = userRepository.findById(keycloakId)
                 .orElseGet(() -> {
@@ -73,6 +79,8 @@ public class UserSynchronizationService {
         // Обновляем основные поля
         user.setUsername(kcUser.getUsername());
         user.setEmail(kcUser.getEmail());
+        user.setFirstName(kcUser.getFirstName());
+        user.setLastName(kcUser.getLastName());
         user.setStatus(status);
 
         userRepository.save(user);
