@@ -3,10 +3,15 @@ package kz.bars.wellify.admin_service.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import kz.bars.wellify.admin_service.dto.*;
 import kz.bars.wellify.admin_service.config.JwtTokenProvider;
+import kz.bars.wellify.admin_service.dto.UserChangePasswordDto;
+import kz.bars.wellify.admin_service.dto.UserCreateDto;
+import kz.bars.wellify.admin_service.dto.UserResponseDto;
+import kz.bars.wellify.admin_service.dto.UserSignInDto;
+import kz.bars.wellify.admin_service.model.User;
+import kz.bars.wellify.admin_service.repository.UserRepository;
 import kz.bars.wellify.admin_service.service.KeycloakService;
-import kz.bars.wellify.admin_service.utils.UserUtils;
+import kz.bars.wellify.admin_service.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
@@ -25,14 +30,23 @@ public class AuthController {
 
     private final KeycloakService keycloakService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     // Эндпоинт для регистрации пользователя
     @PostMapping(value = "/sign-up")
     @Operation(summary = "Sign up")
     public ResponseEntity<UserResponseDto> signUp(@RequestBody UserCreateDto userCreateDto) {
+
         UserRepresentation createdUser = keycloakService.signUp(userCreateDto);
-        UserResponseDto userResponseDto = new UserResponseDto(createdUser.getUsername(), createdUser.getEmail(),
-                createdUser.getFirstName(), createdUser.getLastName());
+
+        // Найти пользователя в локальной БД по Keycloak ID
+        User newUser = userRepository.findById(createdUser.getId()).orElse(null);
+
+        assert newUser != null;
+        UserResponseDto userResponseDto = new UserResponseDto(newUser.getUsername(), newUser.getEmail(),
+                newUser.getFirstName(), newUser.getLastName(), newUser.getPhone(), newUser.getAddress(),
+                newUser.getProfileAvatarUrl(), newUser.getStatus());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDto);
     }
 
@@ -40,7 +54,9 @@ public class AuthController {
     @PostMapping(value = "/sign-in")
     @Operation(summary = "Sign in")
     public ResponseEntity<String> signIn(@RequestBody UserSignInDto userSignInDto) {
+
         String token = keycloakService.signIn(userSignInDto);
+
         return ResponseEntity.ok(token);
     }
 
@@ -50,7 +66,7 @@ public class AuthController {
     @Operation(summary = "Change password")
     public ResponseEntity<String> changePassword(@RequestBody UserChangePasswordDto userChangePasswordDto) {
 
-        String currentUserName = UserUtils.getCurrentUserName();
+        String currentUserName = JWTUtils.getCurrentUserName();
         if (currentUserName == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Couldn't Identify User");
         }
@@ -69,8 +85,10 @@ public class AuthController {
     @Operation(summary = "Logout")
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<String> logout(HttpServletRequest request) {
+
         String token = jwtTokenProvider.resolveToken(request);
         keycloakService.logout(token);
+
         return ResponseEntity.ok("User logged out successfully.");
     }
 }

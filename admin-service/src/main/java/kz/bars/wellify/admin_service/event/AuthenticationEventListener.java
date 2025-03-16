@@ -1,6 +1,6 @@
 package kz.bars.wellify.admin_service.event;
 
-import kz.bars.wellify.admin_service.service.KeycloakUserSynchronizationService;
+import kz.bars.wellify.admin_service.utils.KeycloakUserSynchronizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -15,6 +15,7 @@ public class AuthenticationEventListener {
 
     @EventListener
     public void onAuthenticationSuccess(AuthenticationSuccessEvent event) {
+
         if (event.getAuthentication() instanceof JwtAuthenticationToken jwtAuth) {
             // Здесь вызывается синхронизация по JWT при каждом успешном входе пользователя.
             keycloakUserSyncService.synchronizeUserFromToken(jwtAuth.getToken());

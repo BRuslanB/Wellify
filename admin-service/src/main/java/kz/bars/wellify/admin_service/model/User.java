@@ -12,6 +12,7 @@ import java.util.Set;
 @Setter
 @Table(name = "users")
 public class User {
+
     // Используем Keycloak user id как идентификатор
     @Id
     private String id;
@@ -22,10 +23,20 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    // Дополнительные поля
-    private String phone;
-    private String address;
-    private String profilePictureUrl;
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column
+    private String phone; // Дополнительное поле, номер телефона
+
+    @Column
+    private String address; // Дополнительное поле, адрес
+
+    @Column
+    private String profileAvatarUrl; // Дополнительное поле, ссылка на аватар
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

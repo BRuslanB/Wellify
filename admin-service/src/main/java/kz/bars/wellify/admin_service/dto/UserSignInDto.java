@@ -1,5 +1,6 @@
 package kz.bars.wellify.admin_service.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -7,8 +8,11 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSignInDto {
+public class  UserSignInDto {
 
+    @NotBlank
     public String username;
+
+    @NotBlank
     public String password;
 }
